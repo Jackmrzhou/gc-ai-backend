@@ -2,7 +2,7 @@ package utils
 
 import (
 	"github.com/dgrijalva/jwt-go"
-	"github.com/jackmrzhou/gc-ai/conf"
+	"github.com/jackmrzhou/gc-ai-backend/conf"
 	"time"
 )
 

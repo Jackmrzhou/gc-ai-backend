@@ -3,7 +3,7 @@ package models
 import (
 	"crypto/sha256"
 	"fmt"
-	"github.com/jackmrzhou/gc-ai/conf"
+	"github.com/jackmrzhou/gc-ai-backend/conf"
 	"github.com/jinzhu/gorm"
 	"time"
 )

@@ -2,7 +2,7 @@ package verification
 
 import (
 	"fmt"
-	"github.com/jackmrzhou/gc-ai/models"
+	"github.com/jackmrzhou/gc-ai-backend/models"
 	"math/rand"
 	"time"
 )

@@ -2,8 +2,8 @@ package verification
 
 import (
 	"fmt"
-	"github.com/jackmrzhou/gc-ai/conf"
-	"github.com/jackmrzhou/gc-ai/models"
+	"github.com/jackmrzhou/gc-ai-backend/conf"
+	"github.com/jackmrzhou/gc-ai-backend/models"
 	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"

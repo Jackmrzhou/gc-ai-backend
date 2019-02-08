@@ -2,8 +2,8 @@ package utils
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jackmrzhou/gc-ai/conf"
-	"github.com/jackmrzhou/gc-ai/middleware"
+	"github.com/jackmrzhou/gc-ai-backend/conf"
+	"github.com/jackmrzhou/gc-ai-backend/middleware"
 )
 
 func TestRouter() *gin.Engine {

@@ -2,7 +2,7 @@ package verification
 
 import (
 	"fmt"
-	"github.com/jackmrzhou/gc-ai/conf"
+	"github.com/jackmrzhou/gc-ai-backend/conf"
 	"gopkg.in/gomail.v2"
 )
 

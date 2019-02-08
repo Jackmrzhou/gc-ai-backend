@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"github.com/jackmrzhou/gc-ai/ab-app"
+	"github.com/jackmrzhou/gc-ai-backend/ab-app"
 	"os"
 )
 

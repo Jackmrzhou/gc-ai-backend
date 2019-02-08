@@ -2,11 +2,11 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jackmrzhou/gc-ai/code"
-	"github.com/jackmrzhou/gc-ai/models"
-	"github.com/jackmrzhou/gc-ai/routers/api/json-models"
-	"github.com/jackmrzhou/gc-ai/utils"
-	"github.com/jackmrzhou/gc-ai/verification"
+	"github.com/jackmrzhou/gc-ai-backend/code"
+	"github.com/jackmrzhou/gc-ai-backend/models"
+	"github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+	"github.com/jackmrzhou/gc-ai-backend/utils"
+	"github.com/jackmrzhou/gc-ai-backend/verification"
 	"net/http"
 )
 

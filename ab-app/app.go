@@ -2,9 +2,9 @@ package ab_app
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jackmrzhou/gc-ai/conf"
-	"github.com/jackmrzhou/gc-ai/models"
-	"github.com/jackmrzhou/gc-ai/routers"
+	"github.com/jackmrzhou/gc-ai-backend/conf"
+	"github.com/jackmrzhou/gc-ai-backend/models"
+	"github.com/jackmrzhou/gc-ai-backend/routers"
 )
 
 type AppInterface interface {
