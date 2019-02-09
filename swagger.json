@@ -1,0 +1,254 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "gc-ai API specification",
+    "title": "gc-ai API",
+    "contact": {
+      "email": "594780735@qq.com"
+    },
+    "license": {
+      "name": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    },
+    "version": "0.0.1"
+  },
+  "host": "47.102.147.41",
+  "basePath": "/",
+  "paths": {
+    "/auth": {
+      "post": {
+        "description": "get jwt token from server",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "getAuth",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UserJSON"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/authSuccess"
+          },
+          "400": {
+            "$ref": "#/responses/statusResponse"
+          }
+        }
+      }
+    },
+    "/register": {
+      "post": {
+        "description": "register a new account",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "register",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/RegInfo"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/authSuccess"
+          },
+          "400": {
+            "$ref": "#/responses/statusResponse"
+          }
+        }
+      }
+    },
+    "/vericode": {
+      "post": {
+        "description": "request to server to send a verification code",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "sendVeriCode",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/TargetEmail"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/statusResponse"
+          },
+          "400": {
+            "$ref": "#/responses/statusResponse"
+          },
+          "500": {
+            "$ref": "#/responses/statusResponse"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "AuthSuccess": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "response status",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Code",
+          "example": 200
+        },
+        "data": {
+          "$ref": "#/definitions/AuthSuccessData"
+        },
+        "message": {
+          "description": "response message",
+          "type": "string",
+          "x-go-name": "Msg",
+          "example": "ok"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "AuthSuccessData": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "description": "jwt token",
+          "type": "string",
+          "x-go-name": "Token"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "JSONData": {
+      "type": "object",
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "JSONTemplate": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "response code",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Code",
+          "example": 400
+        },
+        "data": {
+          "$ref": "#/definitions/JSONData"
+        },
+        "message": {
+          "description": "response message",
+          "type": "string",
+          "x-go-name": "Msg",
+          "example": "invalid parameters"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "RegInfo": {
+      "type": "object",
+      "required": [
+        "email",
+        "password",
+        "code"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "x-go-name": "VeriCode",
+          "example": "778899"
+        },
+        "email": {
+          "description": "registration information",
+          "type": "string",
+          "x-go-name": "Email",
+          "example": "test@email.com"
+        },
+        "password": {
+          "type": "string",
+          "x-go-name": "Password",
+          "example": "123456"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "TargetEmail": {
+      "type": "object",
+      "required": [
+        "email"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "x-go-name": "Email",
+          "example": "test@email.com"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "UserJSON": {
+      "type": "object",
+      "required": [
+        "email",
+        "password"
+      ],
+      "properties": {
+        "email": {
+          "type": "string",
+          "x-go-name": "Email",
+          "example": "test@email.com"
+        },
+        "password": {
+          "type": "string",
+          "x-go-name": "Password",
+          "example": "123456"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    }
+  },
+  "responses": {
+    "authSuccess": {
+      "description": "authentication passed response",
+      "schema": {
+        "$ref": "#/definitions/AuthSuccess"
+      }
+    },
+    "statusResponse": {
+      "description": "generic response",
+      "schema": {
+        "$ref": "#/definitions/JSONTemplate"
+      }
+    }
+  }
+}

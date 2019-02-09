@@ -17,6 +17,7 @@ var (
 	WriteTimeout time.Duration
 
 	JWTSecret string
+	Swagger		bool
 
 	// database
 	DBType   string
@@ -44,8 +45,14 @@ func LoadConf(path string) error{
 }
 
 func loadApp() error{
-	RunMode = cfg.Section("App").Key("RUN_MODE").MustString("debug")
-	JWTSecret = cfg.Section("App").Key("JWT_SECRET").MustString("googlecamp")
+	sec, err := cfg.GetSection("app")
+	if err != nil{
+		log.Fatal(2, "Load App config error")
+		return err
+	}
+	RunMode = sec.Key("RUN_MODE").MustString("debug")
+	JWTSecret = sec.Key("JWT_SECRET").MustString("googlecamp")
+	Swagger = sec.Key("SWAGGER").MustBool(false)
 	return nil
 }
 

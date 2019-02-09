@@ -7,6 +7,13 @@ import (
 	"github.com/jackmrzhou/gc-ai-backend/routers"
 )
 
+// @title AI battle platform
+// @version 1.0
+// @description AI battle platform@ZJUGoogleCamp
+// @termsOfService http://swagger.io/terms/
+
+// @license.name Apache 2.0
+
 type AppInterface interface {
 	Initialize(ConfigFile string) error
 	Run()
