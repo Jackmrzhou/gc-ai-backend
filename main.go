@@ -1,7 +1,6 @@
 package main
 
 import (
-	_ "./docs"
 	"fmt"
 	"github.com/jackmrzhou/gc-ai-backend/ab-app"
 	"os"

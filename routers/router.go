@@ -5,8 +5,6 @@ import (
 	"github.com/jackmrzhou/gc-ai-backend/conf"
 	"github.com/jackmrzhou/gc-ai-backend/middleware"
 	"github.com/jackmrzhou/gc-ai-backend/routers/api"
-	"github.com/swaggo/gin-swagger"
-	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
 // @host 47.102.147.41
@@ -18,7 +16,7 @@ func InitRouter() *gin.Engine {
 	gin.SetMode(conf.RunMode)
 
 	if conf.Swagger {
-		router.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+		router.Static("/swagger/", "swaggerui/")
 	}
 	router.POST("/auth", api.GetAuth)
 	router.POST("/register", api.Register)
