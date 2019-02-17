@@ -53,7 +53,7 @@ func NewGame(c *gin.Context) {
 }
 
 func AllGames(c *gin.Context) {
-	// swagger:route GET /api/v1/rank/game getGameRank
+	// swagger:route GET /api/v1/rank/games getAllGame
 	//
 	// get the ranking from a specific game
 	//

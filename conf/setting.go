@@ -44,6 +44,7 @@ func LoadConf(path string) error{
 	err = loadServer()
 	err = loadDatabase()
 	err = loadMail()
+	err = loadAuth()
 	return err
 }
 
@@ -102,6 +103,6 @@ func loadAuth() error {
 		log.Fatal("Load auth config failed")
 		return err
 	}
-	CodeActiveTime = sec.Key("CodeActiveTime").MustDuration(10 * time.Minute)
+	CodeActiveTime = sec.Key("CodeActiveTime").MustDuration(time.Duration(10 * time.Minute))
 	return nil
 }

@@ -78,6 +78,23 @@
         }
       }
     },
+    "/api/v1/rank/games": {
+      "get": {
+        "description": "get the ranking from a specific game",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "getAllGame",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/allGame"
+          }
+        }
+      }
+    },
     "/api/v1/rank/user": {
       "get": {
         "description": "the API will return http status 400 if\nno ranks found",

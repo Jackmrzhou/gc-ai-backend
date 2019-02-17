@@ -1,6 +1,8 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 type dbMaintainer interface {
 	AddFunc(func(), time.Duration)
