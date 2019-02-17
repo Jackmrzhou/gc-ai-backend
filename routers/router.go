@@ -5,9 +5,9 @@ import (
 	"github.com/jackmrzhou/gc-ai-backend/conf"
 	"github.com/jackmrzhou/gc-ai-backend/middleware"
 	"github.com/jackmrzhou/gc-ai-backend/routers/api"
+	"github.com/jackmrzhou/gc-ai-backend/routers/api/v1"
 )
 
-// @host 47.102.147.41
 
 func InitRouter() *gin.Engine {
 	router := gin.New()
@@ -25,7 +25,10 @@ func InitRouter() *gin.Engine {
 	apis := router.Group("/api/v1")
 	apis.Use(middleware.JwtValidation())
 	{
-
+		apis.POST("/game", v1.NewGame)
+		apis.GET("/games/all", v1.AllGames)
+		apis.GET("/rank/game", v1.GetGameRank)
+		apis.GET("/rank/user", v1.GetUserRank)
 	}
 	return router
 }

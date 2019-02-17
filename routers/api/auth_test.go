@@ -76,7 +76,7 @@ func TestGetAuth(t *testing.T) {
 }
 
 func clear() {
-	models.DeleteUser(regs[0].Email)
+	models.DeleteUserDebug(regs[0].Email)
 }
 
 func TestMain(m *testing.M) {

@@ -29,6 +29,9 @@ var (
 	// mail
 	MailAddress string
 	MailAuth	string
+
+	// auth
+	CodeActiveTime time.Duration
 )
 
 func LoadConf(path string) error{
@@ -90,5 +93,15 @@ func loadMail() error{
 	}
 	MailAddress = sec.Key("MAIL").String()
 	MailAuth = sec.Key("AUTH").String()
+	return nil
+}
+
+func loadAuth() error {
+	sec, err := cfg.GetSection("auth")
+	if err != nil{
+		log.Fatal("Load auth config failed")
+		return err
+	}
+	CodeActiveTime = sec.Key("CodeActiveTime").MustDuration(10 * time.Minute)
 	return nil
 }

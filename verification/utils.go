@@ -2,6 +2,7 @@ package verification
 
 import (
 	"fmt"
+	"github.com/jackmrzhou/gc-ai-backend/conf"
 	"github.com/jackmrzhou/gc-ai-backend/models"
 	"math/rand"
 	"time"
@@ -34,7 +35,7 @@ func SendCode(email string) (string, error) {
 
 func CheckAndDelCode(email, code string) bool {
 	c,err := models.QueryVeriCode(email)
-	if err == nil && c.Code == code && c.Timestamp.Add(10 * time.Minute).After(time.Now()){
+	if err == nil && c.Code == code && c.Timestamp.Add(conf.CodeActiveTime).After(time.Now()){
 		models.DeleteVeriCode(&c)
 		return true
 	}else if err == nil{

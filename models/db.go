@@ -37,6 +37,12 @@ func initialRun() {
 	if !db.HasTable(&VerificationCode{}){
 		db.CreateTable(&VerificationCode{})
 	}
+	if !db.HasTable(&Game{}){
+		db.CreateTable(&Game{})
+	}
+	if !db.HasTable(&Rank{}){
+		db.CreateTable(&Rank{})
+	}
 }
 
 func CloseDB() {

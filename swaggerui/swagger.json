@@ -1,17 +1,12 @@
 {
-  "consumes": [
-    "application/json"
-  ],
-  "produces": [
-    "application/json"
-  ],
   "schemes": [
     "http"
   ],
   "swagger": "2.0",
   "info": {
-    "description": "gc-ai API specification",
-    "title": "gc-ai API",
+    "description": "gc-ai API specification\n\nThis should demonstrate all the possible comment annotations\nthat are available to turn go code into a fully compliant swagger 2.0 spec",
+    "title": "gc-ai API.",
+    "termsOfService": "there are no TOS at this moment, use at your own risk we take no responsibility",
     "contact": {
       "email": "594780735@qq.com"
     },
@@ -21,9 +16,99 @@
     },
     "version": "0.0.1"
   },
-  "host": "47.102.147.41",
+  "host": "47.102.147.41:8080",
   "basePath": "/",
   "paths": {
+    "/api/v1/game": {
+      "post": {
+        "description": "create a new game",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "newGame",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/NewGameReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/statusResponse"
+          },
+          "400": {
+            "$ref": "#/responses/statusResponse"
+          }
+        }
+      }
+    },
+    "/api/v1/rank/game": {
+      "get": {
+        "description": "get the ranking from a specific game\nthe API will return http status 400 if\nno ranks found",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "getGameRank",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "uint64",
+            "description": "game id",
+            "name": "ID",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/gameRank"
+          },
+          "400": {
+            "$ref": "#/responses/statusResponse"
+          }
+        }
+      }
+    },
+    "/api/v1/rank/user": {
+      "get": {
+        "description": "the API will return http status 400 if\nno ranks found",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "summary": "get the ranking from a specific user.",
+        "operationId": "getUserRank",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "uint64",
+            "description": "user id",
+            "name": "ID",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/userRank"
+          },
+          "400": {
+            "$ref": "#/responses/statusResponse"
+          }
+        }
+      }
+    },
     "/auth": {
       "post": {
         "description": "get jwt token from server",
@@ -116,6 +201,40 @@
     }
   },
   "definitions": {
+    "AllGamesResp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "response status",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Code",
+          "example": 200
+        },
+        "data": {
+          "description": "all the games",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Game"
+          },
+          "x-go-name": "Data",
+          "example": [
+            {
+              "id": 1,
+              "introduction": "chess game",
+              "name": "chess"
+            }
+          ]
+        },
+        "message": {
+          "description": "response message",
+          "type": "string",
+          "x-go-name": "Msg",
+          "example": "ok"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
     "AuthSuccess": {
       "type": "object",
       "properties": {
@@ -149,6 +268,88 @@
       },
       "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
     },
+    "Game": {
+      "type": "object",
+      "properties": {
+        "introduction": {
+          "type": "string",
+          "x-go-name": "Introduction"
+        },
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/models"
+    },
+    "GameRank": {
+      "type": "object",
+      "properties": {
+        "last_update": {
+          "description": "the time of last change of score",
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "LastUpdate",
+          "example": "2019-02-13T22:17:05+08:00"
+        },
+        "nickname": {
+          "description": "user's nickname",
+          "type": "string",
+          "x-go-name": "Nickname",
+          "example": "jack"
+        },
+        "score": {
+          "description": "score",
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "Score",
+          "example": 1200
+        },
+        "user_id": {
+          "description": "user id",
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "ID",
+          "example": 12
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "GameRankResp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "response status",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Code",
+          "example": 200
+        },
+        "data": {
+          "description": "ranks of a game",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GameRank"
+          },
+          "x-go-name": "Data",
+          "example": [
+            {
+              "last_update": "2019-02-13T22:17:05+08:00",
+              "nickname": "jack",
+              "score": 10,
+              "user_id": 34
+            }
+          ]
+        },
+        "message": {
+          "description": "response message",
+          "type": "string",
+          "x-go-name": "Msg",
+          "example": "ok"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
     "JSONData": {
       "type": "object",
       "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
@@ -160,17 +361,35 @@
           "description": "response code",
           "type": "integer",
           "format": "int64",
-          "x-go-name": "Code",
-          "example": 400
+          "x-go-name": "Code"
         },
         "data": {
           "$ref": "#/definitions/JSONData"
         },
         "message": {
-          "description": "response message",
+          "description": "response message contains status message",
           "type": "string",
-          "x-go-name": "Msg",
-          "example": "invalid parameters"
+          "x-go-name": "Msg"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "NewGameReq": {
+      "type": "object",
+      "required": [
+        "name",
+        "introduction"
+      ],
+      "properties": {
+        "introduction": {
+          "type": "string",
+          "x-go-name": "Introduction",
+          "example": "chess game"
+        },
+        "name": {
+          "type": "string",
+          "x-go-name": "Name",
+          "example": "chess"
         }
       },
       "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
@@ -235,19 +454,105 @@
         }
       },
       "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "UserRank": {
+      "type": "object",
+      "properties": {
+        "game_id": {
+          "description": "game id",
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "ID",
+          "example": 13
+        },
+        "game_name": {
+          "description": "game's name",
+          "type": "string",
+          "x-go-name": "Name",
+          "example": "chess"
+        },
+        "last_update": {
+          "description": "the time of last change of score",
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "LastUpdate",
+          "example": "2019-02-13T22:17:05+08:00"
+        },
+        "score": {
+          "description": "score",
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "Score",
+          "example": 1200
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "UserRankResp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "response status",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Code",
+          "example": 200
+        },
+        "data": {
+          "description": "ranks of a user",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/UserRank"
+          },
+          "x-go-name": "Data",
+          "example": [
+            {
+              "game_id": 19,
+              "game_name": "game 0",
+              "last_update": "2019-02-13T22:17:05+08:00",
+              "score": 10
+            }
+          ]
+        },
+        "message": {
+          "description": "response message",
+          "type": "string",
+          "x-go-name": "Msg",
+          "example": "ok"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
     }
   },
   "responses": {
+    "allGame": {
+      "description": "contains all games",
+      "schema": {
+        "$ref": "#/definitions/AllGamesResp"
+      }
+    },
     "authSuccess": {
       "description": "authentication passed response",
       "schema": {
         "$ref": "#/definitions/AuthSuccess"
       }
     },
+    "gameRank": {
+      "description": "contains ranks of a game, these ranks are not sorted",
+      "schema": {
+        "$ref": "#/definitions/GameRankResp"
+      }
+    },
     "statusResponse": {
       "description": "generic response",
       "schema": {
         "$ref": "#/definitions/JSONTemplate"
+      }
+    },
+    "userRank": {
+      "description": "contains ranks of a user",
+      "schema": {
+        "$ref": "#/definitions/UserRankResp"
       }
     }
   }

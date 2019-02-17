@@ -30,6 +30,17 @@ var profiles = []Profile{
 	},
 }
 
+var games = []Game{
+	{
+		Name:"game 1",
+		Introduction:"Introduction 1",
+	},
+	{
+		Name:"game 2",
+		Introduction:"Introduction 2",
+	},
+}
+
 var usersCreated []User
 
 func TestCreateUser(t *testing.T) {
@@ -42,7 +53,7 @@ func TestCreateUser(t *testing.T) {
 		}
 		fmt.Println(_user)
 		usersCreated = append(usersCreated, _user)
-		profiles[i].UserID = int(_user.ID)
+		profiles[i].UserID = _user.ID
 	}
 	_user, err = CreateUser(users[0].email, users[0].passwd)
 	if err == nil{
@@ -77,6 +88,9 @@ func clear() {
 	}
 	for _, profile := range profiles{
 		db.Unscoped().Delete(&profile)
+	}
+	for _, game := range games{
+		db.Unscoped().Delete(&game)
 	}
 }
 

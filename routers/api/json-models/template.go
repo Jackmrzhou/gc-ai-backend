@@ -13,11 +13,9 @@ type RespStatus struct {
 
 type JSONTemplate struct {
 	// response code
-	// Example: 400
 	Code int `json:"code"`
-	// response message
-	// Example: invalid parameters
+	// response message contains status message
 	Msg string `json:"message"`
-	// Example: nil
+	// contains data, for status response, no data contains
 	JSONData JSONData `json:"data"`
 }

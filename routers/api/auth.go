@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jackmrzhou/gc-ai-backend/code"
+	"github.com/jackmrzhou/gc-ai-backend/api-codes"
 	"github.com/jackmrzhou/gc-ai-backend/models"
 	"github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
 	"github.com/jackmrzhou/gc-ai-backend/utils"
@@ -28,8 +28,8 @@ func GetAuth(c *gin.Context) {
 	if err := c.ShouldBindJSON(&json); err != nil{
 		// invalid parameters
 		c.JSON(http.StatusBadRequest, json_models.APIError{
-			Code:code.INVALID,
-			Msg: code.GetMsg(code.INVALID),
+			Code: api_codes.INVALID,
+			Msg:  api_codes.GetMsg(api_codes.INVALID),
 		})
 		return
 	}
@@ -37,20 +37,20 @@ func GetAuth(c *gin.Context) {
 	if user,err := models.QueryUser(json.Email, json.Password); err != nil{
 		// authentication failed
 		c.JSON(http.StatusBadRequest, json_models.APIError{
-			Code:code.AuthFailed,
-			Msg: code.GetMsg(code.AuthFailed),
+			Code: api_codes.AuthFailed,
+			Msg:  api_codes.GetMsg(api_codes.AuthFailed),
 		})
 	}else if models.IsBanned(&user){
 		// the user is banned
 		c.JSON(http.StatusBadRequest, json_models.APIError{
-			Code:code.Banned,
-			Msg:code.GetMsg(code.Banned),
+			Code: api_codes.Banned,
+			Msg:  api_codes.GetMsg(api_codes.Banned),
 		})
 	}else {
 		// return the token
 		c.JSON(http.StatusOK, json_models.AuthSuccess{
-			Code: code.SUCCESS,
-			Msg:  code.GetMsg(code.SUCCESS),
+			Code: api_codes.SUCCESS,
+			Msg:  api_codes.GetMsg(api_codes.SUCCESS),
 			Data: json_models.AuthSuccessData{
 				Token: utils.GenerateToken(user.ID, user.Email),
 			},
@@ -76,8 +76,8 @@ func Register(c *gin.Context) {
 	if err := c.ShouldBindJSON(&json); err != nil{
 		// invalid parameters
 		c.JSON(http.StatusBadRequest, json_models.APIError{
-			Code:code.INVALID,
-			Msg: code.GetMsg(code.INVALID),
+			Code:     api_codes.INVALID,
+			Msg:      api_codes.GetMsg(api_codes.INVALID),
 			JSONData: struct {}{},
 		})
 		return
@@ -85,8 +85,8 @@ func Register(c *gin.Context) {
 	if !verification.CheckAndDelCode(json.Email, json.VeriCode){
 		// verification failed
 		c.JSON(http.StatusBadRequest, json_models.APIError{
-			Code:code.VeriFailed,
-			Msg:code.GetMsg(code.VeriFailed),
+			Code:     api_codes.VeriFailed,
+			Msg:      api_codes.GetMsg(api_codes.VeriFailed),
 			JSONData: struct {}{},
 		})
 		return
@@ -94,15 +94,15 @@ func Register(c *gin.Context) {
 	if user, err := models.CreateUser(json.Email, json.Password); err != nil{
 		// registration failed
 		c.JSON(http.StatusBadRequest, json_models.APIError{
-			Code : code.RegFailed,
-			Msg:code.GetMsg(code.RegFailed),
+			Code :    api_codes.RegFailed,
+			Msg:      api_codes.GetMsg(api_codes.RegFailed),
 			JSONData: struct {}{},
 		})
 	}else {
 		// registration succeeded, return user_id and token
 		c.JSON(http.StatusOK, json_models.AuthSuccess{
-			Code: code.SUCCESS,
-			Msg:  code.GetMsg(code.SUCCESS),
+			Code: api_codes.SUCCESS,
+			Msg:  api_codes.GetMsg(api_codes.SUCCESS),
 			Data: json_models.AuthSuccessData{
 				Token: utils.GenerateToken(user.ID, user.Email),
 			},
@@ -129,8 +129,8 @@ func SendVeriCode(c *gin.Context) {
 	if err := c.ShouldBindJSON(&json); err != nil{
 		// invalid parameters
 		c.JSON(http.StatusBadRequest, json_models.APIError{
-			Code:code.INVALID,
-			Msg: code.GetMsg(code.INVALID),
+			Code:     api_codes.INVALID,
+			Msg:      api_codes.GetMsg(api_codes.INVALID),
 			JSONData: struct {}{},
 		})
 		return
@@ -138,15 +138,15 @@ func SendVeriCode(c *gin.Context) {
 	if _, err := verification.SendCode(json.Email); err != nil{
 		// send mail failed
 		c.JSON(http.StatusInternalServerError, json_models.APIError{
-			Code:code.SendMailFailed,
-			Msg: code.GetMsg(code.SendMailFailed),
+			Code:     api_codes.SendMailFailed,
+			Msg:      api_codes.GetMsg(api_codes.SendMailFailed),
 			JSONData: struct {}{},
 		})
 	}else{
 		// send mail succeeded
-		c.JSON(http.StatusBadRequest, json_models.NoData{
-			Code:code.SUCCESS,
-			Msg: code.GetMsg(code.SUCCESS),
+		c.JSON(http.StatusBadRequest, json_models.Status{
+			Code:     api_codes.SUCCESS,
+			Msg:      api_codes.GetMsg(api_codes.SUCCESS),
 			JSONData: struct {}{},
 		})
 	}
