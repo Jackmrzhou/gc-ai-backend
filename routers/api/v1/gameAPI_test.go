@@ -8,7 +8,7 @@ import (
 	"github.com/jackmrzhou/gc-ai-backend/conf"
 	"github.com/jackmrzhou/gc-ai-backend/models"
 	"github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
-	"github.com/jackmrzhou/gc-ai-backend/utils"
+	"github.com/jackmrzhou/gc-ai-backend/test-utils"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -127,7 +127,7 @@ func TestMain(m *testing.M) {
 		fmt.Println(err)
 		os.Exit(-1)
 	}
-	r = utils.TestRouter()
+	r = test_utils.TestRouter()
 	if err := models.OpenDB(); err != nil{
 		fmt.Println(err)
 		os.Exit(-1)

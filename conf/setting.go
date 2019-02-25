@@ -32,6 +32,10 @@ var (
 
 	// auth
 	CodeActiveTime time.Duration
+
+	//judger
+	JudgerPath	string
+	DataDir 	string
 )
 
 func LoadConf(path string) error{
@@ -45,6 +49,7 @@ func LoadConf(path string) error{
 	err = loadDatabase()
 	err = loadMail()
 	err = loadAuth()
+	err = loadJudger()
 	return err
 }
 
@@ -104,5 +109,16 @@ func loadAuth() error {
 		return err
 	}
 	CodeActiveTime = sec.Key("CodeActiveTime").MustDuration(time.Duration(10 * time.Minute))
+	return nil
+}
+
+func loadJudger() error {
+	sec, err := cfg.GetSection("judger")
+	if err != nil{
+		log.Fatal("Load judger config failed")
+		return err
+	}
+	JudgerPath = sec.Key("EXE_PATH").String()
+	DataDir = sec.Key("DATA_DIR").String()
 	return nil
 }

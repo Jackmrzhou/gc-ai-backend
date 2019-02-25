@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/jackmrzhou/gc-ai-backend/conf"
 	"github.com/jinzhu/gorm"
+	"log"
 	"time"
 )
 
@@ -15,7 +16,11 @@ type User struct {
 	Email string `gorm:"type:varchar(320); UNIQUE_INDEX"`
 	Password string `gorm:"type:char(64)"`
 	IsBanned int `gorm:"type:tinyint"`
+	IsAdmin	int `gorm:"type:tinyint"`
 	Ranks []Rank `gorm:"PRELOAD:false"`
+	SourceCodes []SourceCode `gorm:"PRELOAD:false"`
+	Attacks []Battle `gorm:"foreignkey:AttackerID; PRELOAD:false"`
+	Defenses []Battle `gorm:"foreignkey:DefenderID; PRELOAD:false"`
 }
 
 func (self User) String() string {
@@ -61,6 +66,8 @@ type Game struct {
 	Name string `gorm:"type:varchar(100); UNIQUE_INDEX" json:"name"`
 	Introduction string `gorm:"type:TEXT" json:"introduction"`
 	Ranks []Rank `gorm:"PRELOAD:false" json:"-"`
+	SourceCodes []SourceCode `gorm:"PRELOAD:false" json:"-"`
+	BattleHistory []Battle `gorm:"PRELOAD:false" json:"-"`
 }
 
 func (self *Game) MarshalJSON() ([]byte, error) {
@@ -78,11 +85,113 @@ func (self Game) String() string {
 	return fmt.Sprintf("<Name: %s, Introduction: %s>", self.Name, self.Introduction)
 }
 
+type SourceCode struct {
+	gorm.Model `json:"-"`
+	UserID uint `json:"user_id"`
+	GameID uint	`json:"game_id"`
+	CodeType int `gorm:"type:tinyint" json:"code_type"`
+	Language string `gorm:"type:varchar(20)" json:"language"`
+	Content string `gorm:"type:TEXT" json:"source_code"`
+}
+
+// two const for CodeType in SourceCode
+const (
+	DFFAULT = 0
+	ATTACK = 1
+	DEFEND = 2
+)
+
+func (self *SourceCode) MarshalJSON() ([]byte, error) {
+	type Alias SourceCode
+	return json.Marshal(&struct {
+		ID uint `json:"id"`
+		*Alias
+	}{
+		self.ID,
+		(*Alias)(self),
+	})
+}
+
+func (self SourceCode) String() string {
+	return fmt.Sprintf("SourceCode<UserID: %d, GameID: %d>", self.UserID, self.GameID)
+}
+
 type Rank struct {
 	gorm.Model
 	GameID uint
 	UserID uint
 	Score  uint
+}
+
+func (self Rank) String() string {
+	return fmt.Sprintf("Rank<UserID: %d, GameID: %d>", self.UserID, self.GameID)
+}
+
+type Battle struct {
+	// only support 1V1
+	gorm.Model `json:"-"`
+	Status uint `json:"status"`
+	AttackerID uint `json:"attacker_id"`
+	DefenderID uint `json:"defender_id"`
+	GameID uint `json:"game_id"`
+	Detail string `gorm:"type:TEXT" json:"detail"`
+	WinnerID uint `json:"winner_id"`
+	RewardScore uint `json:"reward_score"`
+	PenaltyScore uint `json:"penalty_score"`
+}
+
+func CreateBattle(atkID, defID uint, game *Game) (*Battle, error) {
+
+	// todo:check atkID defID game
+
+	battle := Battle{
+		Status:Suspending,
+		AttackerID:atkID,
+		DefenderID:defID,
+		GameID:game.ID,
+	}
+
+	err := db.Create(&battle).Error
+	return &battle,err
+}
+
+func UpdateBattle(battle *Battle) error {
+	err := db.Save(battle).Error
+	return err
+}
+
+func QueryBattleByID(id uint) (*Battle, error) {
+	battle := new(Battle)
+	err := db.Where("id = ?", id).First(battle).Error
+	return battle, err
+}
+
+func UpdateBattleStatusByID(id uint, status uint) error {
+	var battle Battle
+	err := db.Where("id = ?", id).First(&battle).Error
+	if err != nil{
+		return err
+	}
+
+	err = db.Model(&battle).Update("status", status).Error
+	return err
+}
+
+const (
+	Suspending = 1
+	Judeging = 2
+	Finished = 3
+)
+
+func (self Battle) String() string {
+	return fmt.Sprintf("Battle<ATKID: %d, DEFID: %d>", self.AttackerID, self.DefenderID)
+}
+
+func IsEngagedInBattle(userID uint) bool{
+	// check whether a user has battles not finished
+	var battles []Battle
+	db.Where("attacker_id = ? AND status <> ?", userID, Finished).Find(&battles)
+	return len(battles) != 0
 }
 
 func CreateUser(email, passwd string) (User, error) {
@@ -117,6 +226,12 @@ func QueryUser(email, passwd string) (User, error){
 		return user, err
 	}
 	return user, nil
+}
+
+func QueryUserByID(ID uint) (*User, error) {
+	user := new(User)
+	err := db.Where("user_id = ?", ID).First(user).Error
+	return user, err
 }
 
 func IsBanned(user *User) bool {
@@ -163,6 +278,7 @@ func CreateVeriCodeDebug(code *VerificationCode) {
 }
 
 func MaintainVeriCode() {
+	log.Println("Starting cleaning verification codes...")
 	var codes []VerificationCode
 	db.Find(&codes)
 	for _, code := range codes{
@@ -171,6 +287,7 @@ func MaintainVeriCode() {
 			db.Delete(&code)
 		}
 	}
+	log.Println("Cleaning verification codes finished.")
 }
 
 func CreateGame(game *Game) error {
@@ -204,6 +321,7 @@ func QueryGameByID(id uint) (*Game, error) {
 
 func CreateRank(user *User, game *Game, score uint) (*Rank, error) {
 	rank := new(Rank)
+	// todo:check user, game
 	if err:= db.Where("user_id = ? AND game_id = ? AND score = ?",
 		user.ID, game.ID, score).First(rank).Error; err == nil{
 		return rank, fmt.Errorf("User: %s, Game: %s. Score already exists.", user.Email, game.Name)
@@ -215,22 +333,42 @@ func CreateRank(user *User, game *Game, score uint) (*Rank, error) {
 	return rank, err
 }
 
+func CreateRankByID(userID, gameID, score uint) (*Rank, error) {
+	rank := new(Rank)
+	// todo:check user, game
+	if err:= db.Where("user_id = ? AND game_id = ? AND score = ?",
+		userID, gameID, score).First(rank).Error; err == nil{
+		return rank, fmt.Errorf("UserID: %d, GameID: %d. Score already exists.", userID, gameID)
+	}
+	rank.UserID = userID
+	rank.GameID = gameID
+	rank.Score = score
+	err := db.Create(rank).Error
+	return rank, err
+}
+
 func DeleteRankByIDDebug(ID uint) {
 	if conf.RunMode == "debug" {
 		db.Unscoped().Delete(&Rank{}, "ID = ?", ID)
 	}
 }
 
-func QueryRankByGameID(gameID uint) ([]*Rank, error) {
-	var ranks []*Rank
+func QueryRankByGameID(gameID uint) ([]Rank, error) {
+	var ranks []Rank
 	err := db.Where("game_id = ?", gameID).Find(&ranks).Error
 	return ranks, err
 }
 
-func QueryRankByUserID(userID uint) ([]*Rank, error) {
-	var ranks []*Rank
+func QueryRankByUserID(userID uint) ([]Rank, error) {
+	var ranks []Rank
 	err := db.Where("user_id = ?", userID).Find(&ranks).Error
 	return ranks, err
+}
+
+func QueryRankByUserAndGameID(userID, gameID uint) (*Rank, error) {
+	rank := new(Rank)
+	err := db.Where("user_id = ? AND game_id = ?", userID, gameID).First(rank).Error
+	return rank, err
 }
 
 func UpdateRank(user *User, game *Game, score uint) error {
@@ -243,11 +381,60 @@ func UpdateRank(user *User, game *Game, score uint) error {
 	return err
 }
 
-func UpdataRankByID(id, score uint) error {
+func UpdateRankByID(id uint, scoreDelta int) error {
 	rank := new(Rank)
 	if err := db.Where("id = ?", id).First(rank).Error; err != nil{
 		return err
 	}
-	err := db.Model(rank).Update("score", score).Error
+	sc := int(rank.Score)
+	sc += scoreDelta
+	if sc < 0{
+		// prevent overflow
+		rank.Score = 0
+	}else{
+		rank.Score = uint(sc)
+	}
+	err := db.Model(rank).Update("score", rank.Score).Error
+	return err
+}
+
+func CreateSourceCode(user *User, game *Game, codeType int, language,content string) (*SourceCode, error) {
+	sourceCode := new(SourceCode)
+	// todo:check user, game
+	sourceCode.GameID = game.ID
+	sourceCode.UserID = user.ID
+	sourceCode.CodeType = codeType
+	sourceCode.Language = language
+	sourceCode.Content = content
+	err := db.Create(sourceCode).Error
+	return sourceCode, err
+}
+
+func QuerySourceCodeByUserID(userID uint) ([]SourceCode, error) {
+	var codes []SourceCode
+	err := db.Where("user_id = ?", userID).Find(&codes).Error
+	return codes, err
+}
+
+func QuerySourceCodeByUserGameIDs(userID, gameID uint) ([]SourceCode, error) {
+	var codes []SourceCode
+	err := db.Where("user_id = ? AND game_id = ?", userID, gameID).Find(&codes).Error
+	return codes, err
+}
+
+func QueryATKSrcByUserID(userID uint) (*SourceCode, error) {
+	src := new(SourceCode)
+	err := db.Where("user_id = ? AND code_type = ?", userID, ATTACK).First(src).Error
+	return src, err
+}
+
+func QueryDEFSrcByUserID(userID uint) (*SourceCode, error) {
+	src := new(SourceCode)
+	err := db.Where("user_id = ? AND code_type = ?", userID, ATTACK).First(src).Error
+	return src, err
+}
+
+func UpdateSourceCode(code *SourceCode) error {
+	err := db.Save(code).Error
 	return err
 }

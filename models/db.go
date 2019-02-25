@@ -43,6 +43,12 @@ func initialRun() {
 	if !db.HasTable(&Rank{}){
 		db.CreateTable(&Rank{})
 	}
+	if !db.HasTable(&SourceCode{}){
+		db.CreateTable(&SourceCode{})
+	}
+	if !db.HasTable(&Battle{}){
+		db.CreateTable(&Battle{})
+	}
 }
 
 func CloseDB() {

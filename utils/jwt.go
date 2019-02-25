@@ -2,6 +2,7 @@ package utils
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	"github.com/gin-gonic/gin"
 	"github.com/jackmrzhou/gc-ai-backend/conf"
 	"time"
 )
@@ -40,4 +41,10 @@ func ParseToken(token string) (*Claim, error) {
 		}
 	}
 	return nil, err
+}
+
+func GetCurrentUserID(c *gin.Context) (uint,error) {
+	token := c.GetHeader("Authorization")
+	claim, err := ParseToken(token)
+	return claim.UserId, err
 }

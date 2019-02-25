@@ -29,6 +29,13 @@ func InitRouter() *gin.Engine {
 		apis.GET("/games/all", v1.AllGames)
 		apis.GET("/rank/game", v1.GetGameRank)
 		apis.GET("/rank/user", v1.GetUserRank)
+
+		apis.POST("/sourcecode", v1.UploadSourceCode)
+		apis.GET("/user/sourcecode", v1.GetSourceCodesByUser)
+		apis.GET("/sourcecode", v1.GetSrcByUserAndGame)
+
+		apis.POST("/battle", v1.StartBattle)
+		apis.GET("/battle", v1.QueryProcess)
 	}
 	return router
 }

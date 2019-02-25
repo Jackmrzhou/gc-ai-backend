@@ -14,14 +14,70 @@
       "name": "MIT",
       "url": "http://opensource.org/licenses/MIT"
     },
-    "version": "0.0.1"
+    "version": "0.1.0"
   },
   "host": "47.102.147.41:8080",
   "basePath": "/",
   "paths": {
+    "/api/v1/battle": {
+      "get": {
+        "description": "query the process of a battle",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "queryProcess",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "uint64",
+            "x-go-name": "BattleID",
+            "name": "battle_id",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/queryProcessResp"
+          },
+          "400": {
+            "$ref": "#/responses/statusResponse"
+          }
+        }
+      },
+      "post": {
+        "description": "start a battle",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "startBattle",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UploadSourceCodeReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/startBattleResp"
+          },
+          "400": {
+            "$ref": "#/responses/statusResponse"
+          }
+        }
+      }
+    },
     "/api/v1/game": {
       "post": {
-        "description": "create a new game",
+        "description": "create a new game\nonly administrator is allowed",
         "consumes": [
           "application/json"
         ],
@@ -44,6 +100,23 @@
           },
           "400": {
             "$ref": "#/responses/statusResponse"
+          }
+        }
+      }
+    },
+    "/api/v1/games/all": {
+      "get": {
+        "description": "get all the games",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "getAllGame",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/allGame"
           }
         }
       }
@@ -78,23 +151,6 @@
         }
       }
     },
-    "/api/v1/rank/games": {
-      "get": {
-        "description": "get the ranking from a specific game",
-        "consumes": [
-          "application/x-www-form-urlencoded"
-        ],
-        "produces": [
-          "application/json"
-        ],
-        "operationId": "getAllGame",
-        "responses": {
-          "200": {
-            "$ref": "#/responses/allGame"
-          }
-        }
-      }
-    },
     "/api/v1/rank/user": {
       "get": {
         "description": "the API will return http status 400 if\nno ranks found",
@@ -119,6 +175,84 @@
         "responses": {
           "200": {
             "$ref": "#/responses/userRank"
+          },
+          "400": {
+            "$ref": "#/responses/statusResponse"
+          }
+        }
+      }
+    },
+    "/api/v1/sourcecode": {
+      "get": {
+        "description": "get the user's all source codes",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "getSrcByUserAndGame",
+        "parameters": [
+          {
+            "type": "integer",
+            "format": "uint64",
+            "x-go-name": "GameID",
+            "description": "game id",
+            "name": "game_id",
+            "in": "query",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getSourceCodesResp"
+          },
+          "400": {
+            "$ref": "#/responses/statusResponse"
+          }
+        }
+      },
+      "post": {
+        "description": "upload source code",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "uploadSourceCode",
+        "parameters": [
+          {
+            "name": "Body",
+            "in": "body",
+            "schema": {
+              "$ref": "#/definitions/UploadSourceCodeReq"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/uploadSourceCodeResp"
+          },
+          "400": {
+            "$ref": "#/responses/statusResponse"
+          }
+        }
+      }
+    },
+    "/api/v1/user/sourcecode": {
+      "get": {
+        "description": "get the user's all source codes",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "getSourceCodeByUser",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getSourceCodesResp"
           },
           "400": {
             "$ref": "#/responses/statusResponse"
@@ -285,6 +419,51 @@
       },
       "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
     },
+    "Battle": {
+      "type": "object",
+      "properties": {
+        "attacker_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "AttackerID"
+        },
+        "defender_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "DefenderID"
+        },
+        "detail": {
+          "type": "string",
+          "x-go-name": "Detail"
+        },
+        "game_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "GameID"
+        },
+        "penalty_score": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "PenaltyScore"
+        },
+        "reward_score": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "RewardScore"
+        },
+        "status": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "Status"
+        },
+        "winner_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "WinnerID"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/models"
+    },
     "Game": {
       "type": "object",
       "properties": {
@@ -367,6 +546,42 @@
       },
       "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
     },
+    "GetSourceCodes": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "response status",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Code",
+          "example": 200
+        },
+        "data": {
+          "description": "source codes",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SourceCode"
+          },
+          "x-go-name": "Data",
+          "example": [
+            {
+              "code_type": 1,
+              "game_id": 2,
+              "language": "cpp",
+              "source_code": "string",
+              "user_id": 1
+            }
+          ]
+        },
+        "message": {
+          "description": "response message",
+          "type": "string",
+          "x-go-name": "Msg",
+          "example": "ok"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
     "JSONData": {
       "type": "object",
       "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
@@ -411,6 +626,28 @@
       },
       "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
     },
+    "QueryProcessResp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "response status",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Code",
+          "example": 200
+        },
+        "data": {
+          "$ref": "#/definitions/Battle"
+        },
+        "message": {
+          "description": "response message",
+          "type": "string",
+          "x-go-name": "Msg",
+          "example": "ok"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
     "RegInfo": {
       "type": "object",
       "required": [
@@ -438,6 +675,77 @@
       },
       "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
     },
+    "SourceCode": {
+      "type": "object",
+      "properties": {
+        "code_type": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "CodeType"
+        },
+        "game_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "GameID"
+        },
+        "language": {
+          "type": "string",
+          "x-go-name": "Language"
+        },
+        "source_code": {
+          "type": "string",
+          "x-go-name": "Content"
+        },
+        "user_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "UserID"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/models"
+    },
+    "StartBattleData": {
+      "type": "object",
+      "properties": {
+        "battle_id": {
+          "description": "battle id",
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "BattleID",
+          "example": 13
+        },
+        "status": {
+          "description": "Current Battle Status: 1 == suspending, 2 == judging, 3 == finished",
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "Status",
+          "example": 2
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "StartBattleResp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "response code",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Code",
+          "example": 200
+        },
+        "data": {
+          "$ref": "#/definitions/StartBattleData"
+        },
+        "message": {
+          "description": "response status",
+          "type": "string",
+          "x-go-name": "Msg",
+          "example": "ok"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
     "TargetEmail": {
       "type": "object",
       "required": [
@@ -448,6 +756,74 @@
           "type": "string",
           "x-go-name": "Email",
           "example": "test@email.com"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "UploadSourceCodeData": {
+      "type": "object",
+      "properties": {
+        "source_code_id": {
+          "description": "source code's ID",
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "SourceCodeID",
+          "example": 23
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "UploadSourceCodeReq": {
+      "type": "object",
+      "required": [
+        "game_id",
+        "code_type",
+        "language",
+        "source_code"
+      ],
+      "properties": {
+        "code_type": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "CodeType",
+          "example": 1
+        },
+        "game_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "GameID",
+          "example": 12
+        },
+        "language": {
+          "type": "string",
+          "x-go-name": "Language",
+          "example": "cpp"
+        },
+        "source_code": {
+          "type": "string",
+          "x-go-name": "SourceCode"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "UploadSourceCodeResp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "response status",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Code",
+          "example": 200
+        },
+        "data": {
+          "$ref": "#/definitions/UploadSourceCodeData"
+        },
+        "message": {
+          "description": "response message",
+          "type": "string",
+          "x-go-name": "Msg",
+          "example": "ok"
         }
       },
       "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
@@ -560,10 +936,34 @@
         "$ref": "#/definitions/GameRankResp"
       }
     },
+    "getSourceCodesResp": {
+      "description": "contains all the source codes",
+      "schema": {
+        "$ref": "#/definitions/GetSourceCodes"
+      }
+    },
+    "queryProcessResp": {
+      "description": "query succeeded, the details of a battle will be returned",
+      "schema": {
+        "$ref": "#/definitions/QueryProcessResp"
+      }
+    },
+    "startBattleResp": {
+      "description": "operation succeeded, the info of the battle will be returned",
+      "schema": {
+        "$ref": "#/definitions/StartBattleResp"
+      }
+    },
     "statusResponse": {
       "description": "generic response",
       "schema": {
         "$ref": "#/definitions/JSONTemplate"
+      }
+    },
+    "uploadSourceCodeResp": {
+      "description": "operation succeeded, the source code's ID will returned",
+      "schema": {
+        "$ref": "#/definitions/UploadSourceCodeResp"
       }
     },
     "userRank": {

@@ -12,6 +12,7 @@ func NewGame(c *gin.Context) {
 	// swagger:route POST /api/v1/game newGame
 	//
 	// create a new game
+	// only administrator is allowed
 	//
 	//
 	//     Consumes:
@@ -53,9 +54,9 @@ func NewGame(c *gin.Context) {
 }
 
 func AllGames(c *gin.Context) {
-	// swagger:route GET /api/v1/rank/games getAllGame
+	// swagger:route GET /api/v1/games/all getAllGame
 	//
-	// get the ranking from a specific game
+	// get all the games
 	//
 	//     Consumes:
 	//     - application/x-www-form-urlencoded

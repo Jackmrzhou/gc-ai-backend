@@ -14,6 +14,12 @@ const (
 	UnAuth = 2008
 	AuthTimeOut = 2009
 	InvaildToken = 2100
+	NewSrcFailed = 2010
+	SourceCodesNotFound = 2011
+	ObjectUnavailable = 2012
+	ObjectNotFound	= 2013
+	WaitForFinish = 2014
+	StartBattleFailed = 2015
 )
 
 var Msgs = map[int] string{
@@ -30,6 +36,12 @@ var Msgs = map[int] string{
 	UnAuth:"Unauthorized",
 	AuthTimeOut :"Authorization is expired",
 	InvaildToken : "Token is invalid",
+	NewSrcFailed : "Uploading source code failed",
+	SourceCodesNotFound:"no source codes found",
+	ObjectUnavailable:"object is unavailable",
+	ObjectNotFound :"object not found",
+	WaitForFinish : "you still have programs in execution",
+	StartBattleFailed:"start battle failed",
 }
 
 func GetMsg(code int) string {
