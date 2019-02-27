@@ -20,6 +20,18 @@ var mailSender CodeMailSender
 func SendCode(email string) (string, error) {
 	code := generateCode(email)
 	var err error
+
+	vericode, err := models.QueryVeriCode(email)
+	if err == nil{
+		// already exists
+		// todo:write into config
+		if vericode.Timestamp.Add(time.Minute).Before(time.Now()) {
+			models.DeleteVeriCode(&vericode)
+		}else{
+			return "", fmt.Errorf("Sending email too fast. %s", email)
+		}
+	}
+
 	err = models.CreateVeriCode(email, code)
 	if err != nil{
 		// storing into database failed
@@ -36,9 +48,11 @@ func SendCode(email string) (string, error) {
 func CheckAndDelCode(email, code string) bool {
 	c,err := models.QueryVeriCode(email)
 	if err == nil && c.Code == code && c.Timestamp.Add(conf.CodeActiveTime).After(time.Now()){
+		// valid
 		models.DeleteVeriCode(&c)
 		return true
-	}else if err == nil{
+	}else if err == nil && c.Code == code{
+		// time expired
 		models.DeleteVeriCode(&c)
 	}
 	return false

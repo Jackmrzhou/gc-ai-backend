@@ -7,6 +7,7 @@ import (
 	"github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
 	"github.com/jackmrzhou/gc-ai-backend/utils"
 	"github.com/jackmrzhou/gc-ai-backend/verification"
+	"log"
 	"net/http"
 )
 
@@ -137,6 +138,7 @@ func SendVeriCode(c *gin.Context) {
 	}
 	if _, err := verification.SendCode(json.Email); err != nil{
 		// send mail failed
+		log.Println(err)
 		c.JSON(http.StatusInternalServerError, json_models.APIError{
 			Code:     api_codes.SendMailFailed,
 			Msg:      api_codes.GetMsg(api_codes.SendMailFailed),

@@ -33,15 +33,15 @@ func Judge(ATKSrc, DEFSrc *models.SourceCode, game *models.Game, battle *models.
 	cmd := exec.Command(conf.JudgerPath, atkFilePath, atkUUID.String(), defFilePath, defUUID.String(), resFilePath)
 
 	if err:=models.UpdateBattleStatusByID(battle.ID, models.Judeging); err != nil{
-		log.Fatal(err)
+		log.Println(err)
 	}
 	err = cmd.Run()
 	if err != nil{
-		log.Fatal(err)
+		log.Println(err)
 	}else {
 		b, err := ioutil.ReadFile(resFilePath)
 		if err != nil{
-			log.Fatal("Read result file failed!")
+			log.Println("Read result file failed!")
 			// todo:handle unexpect error
 		}else{
 			UpdateBattleInfo(battle, string(b))

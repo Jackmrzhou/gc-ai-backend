@@ -53,7 +53,7 @@ func StartBattle(c *gin.Context) {
 		// all objects are available
 
 		if _battle, err = models.CreateBattle(attackerSrc.UserID, defenderSrc.UserID, game); err != nil{
-			log.Fatalf("Crate battle failed. %d, %d", attackerSrc.UserID, defenderSrc.UserID)
+			log.Printf("Crate battle failed. %d, %d", attackerSrc.UserID, defenderSrc.UserID)
 			returnCode = api_codes.StartBattleFailed
 		}else {
 			// judge

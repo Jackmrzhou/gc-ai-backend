@@ -17,6 +17,6 @@ func SuccessResponse(c *gin.Context, code int) {
 
 func LogIfNotNil(err error) {
 	if err != nil{
-		log.Fatal(err)
+		log.Println(err)
 	}
 }
