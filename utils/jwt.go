@@ -33,7 +33,7 @@ func GenerateToken(UserId uint, Email string) string {
 
 func ParseToken(token string) (*Claim, error) {
 	tokenClaim, err := jwt.ParseWithClaims(token, &Claim{}, func(token *jwt.Token) (i interface{}, e error) {
-		return conf.JWTSecret, nil
+		return []byte(conf.JWTSecret), nil
 	})
 	if tokenClaim != nil{
 		if claim, ok := tokenClaim.Claims.(*Claim); ok && tokenClaim.Valid{
