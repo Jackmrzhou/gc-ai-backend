@@ -6,6 +6,7 @@ import (
 	"github.com/jackmrzhou/gc-ai-backend/models"
 	"github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
 	"github.com/jackmrzhou/gc-ai-backend/utils"
+	"log"
 	"net/http"
 )
 
@@ -38,10 +39,12 @@ func UploadSourceCode(c *gin.Context) {
 	var err error
 
 	if user, err = models.QueryUserByID(userID); err != nil{
+		log.Println(err)
 		returnCode = api_codes.NewSrcFailed
 	}
 
 	if game, err = models.QueryGameByID(json.GameID); err != nil{
+		log.Println(err)
 		returnCode = api_codes.NewSrcFailed
 	}
 
@@ -53,9 +56,16 @@ func UploadSourceCode(c *gin.Context) {
 	var sourceCode *models.SourceCode
 	if sourceCode, err = models.CreateSourceCode(user, game, json.CodeType, json.Language, json.SourceCode); err != nil{
 		returnCode = api_codes.NewSrcFailed
+		log.Println(err)
 		utils.ErrorResponse(c, returnCode)
 	}else{
 		returnCode = api_codes.SUCCESS
+
+		models.SetSrcRole(user.ID, sourceCode.ID, json.CodeType)
+		if _, err := models.QueryRankByUserAndGameID(user.ID, json.GameID); err != nil {
+			models.CreateRank(user, game, 1000)
+		}
+
 		c.JSON(http.StatusOK, json_models.UploadSourceCodeResp{
 			Code:returnCode,
 			Msg:api_codes.GetMsg(returnCode),

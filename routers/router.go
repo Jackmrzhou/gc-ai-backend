@@ -36,6 +36,11 @@ func InitRouter() *gin.Engine {
 
 		apis.POST("/battle", v1.StartBattle)
 		apis.GET("/battle", v1.QueryProcess)
+		apis.GET("/user/battles", v1.GetUserBattles)
+
+		apis.GET("/user/profile", v1.GetProfile)
+		apis.GET("/testNickname", v1.TestNickname)
+		apis.POST("/user/profile", v1.UpdateProfile)
 	}
 	return router
 }

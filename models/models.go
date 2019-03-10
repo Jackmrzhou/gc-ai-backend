@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/jackmrzhou/gc-ai-backend/conf"
 	"github.com/jinzhu/gorm"
-	"log"
 	"time"
 )
 
@@ -28,14 +27,14 @@ func (self User) String() string {
 }
 
 type Profile struct {
-	gorm.Model
+	gorm.Model `json:"-"`
 	//Id int `gorm:"PRIMARY_KEY"`
-	User User
-	UserID uint
+	User User `json:"-"`
+	UserID uint `json:"-"`
 	// referencing back
-	Nickname string `gorm:"type:varchar(20)"`
-	Avatar string `gorm:"type:varchar(200)"`
-	Introduction string `gorm:"type:varchar(200)"`
+	Nickname string `gorm:"type:varchar(20); UNIQUE_INDEX" json:"nickname"`
+	Avatar string `gorm:"type:varchar(200)" json:"avatar"`
+	Introduction string `gorm:"type:varchar(200)" json:"introduction"`
 }
 
 func (self Profile) String() string {
@@ -96,7 +95,7 @@ type SourceCode struct {
 
 // two const for CodeType in SourceCode
 const (
-	DFFAULT = 0
+	DEFAULT = 0
 	ATTACK = 1
 	DEFEND = 2
 )
@@ -230,7 +229,7 @@ func QueryUser(email, passwd string) (User, error){
 
 func QueryUserByID(ID uint) (*User, error) {
 	user := new(User)
-	err := db.Where("user_id = ?", ID).First(user).Error
+	err := db.Where("id = ?", ID).First(user).Error
 	return user, err
 }
 
@@ -278,7 +277,7 @@ func CreateVeriCodeDebug(code *VerificationCode) {
 }
 
 func MaintainVeriCode() {
-	log.Println("Starting cleaning verification codes...")
+	//log.Println("Starting cleaning verification codes...")
 	var codes []VerificationCode
 	db.Find(&codes)
 	for _, code := range codes{
@@ -287,7 +286,7 @@ func MaintainVeriCode() {
 			db.Delete(&code)
 		}
 	}
-	log.Println("Cleaning verification codes finished.")
+	//log.Println("Cleaning verification codes finished.")
 }
 
 func CreateGame(game *Game) error {
@@ -410,6 +409,21 @@ func CreateSourceCode(user *User, game *Game, codeType int, language,content str
 	return sourceCode, err
 }
 
+func SetSrcRole(userID, srcID uint, role int) error {
+	var sourceCodes []SourceCode
+	db.Where("user_id = ?", userID).Find(&sourceCodes)
+	for _, src := range sourceCodes{
+		if src.ID == srcID{
+			src.CodeType = role
+			db.Save(&src)
+		}else if src.CodeType == role{
+			src.CodeType = DEFAULT
+			db.Save(&src)
+		}
+	}
+	return nil
+}
+
 func QuerySourceCodeByUserID(userID uint) ([]SourceCode, error) {
 	var codes []SourceCode
 	err := db.Where("user_id = ?", userID).Find(&codes).Error
@@ -437,4 +451,26 @@ func QueryDEFSrcByUserID(userID uint) (*SourceCode, error) {
 func UpdateSourceCode(code *SourceCode) error {
 	err := db.Save(code).Error
 	return err
+}
+
+func QueryProfileByUserID(userID uint) (*Profile, error) {
+	profile := new(Profile)
+	err := db.Where("user_id = ?", userID).First(profile).Error
+	return profile, err
+}
+
+func UpdateProfile(profile *Profile) error {
+	return db.Save(profile).Error
+}
+
+func QueryProfileByNickname(nickname string) (*Profile, error) {
+	profile := new(Profile)
+	err := db.Where("nickname = ?", nickname).First(profile).Error
+	return profile, err
+}
+
+func QueryBattlesByUserID(userID uint) ([]Battle, error) {
+	var battles []Battle
+	err := db.Where("attacker_id = ? OR defender_id = ?", userID, userID).Find(&battles).Error
+	return battles, err
 }

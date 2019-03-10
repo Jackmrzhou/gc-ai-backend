@@ -101,6 +101,10 @@ func Register(c *gin.Context) {
 		})
 	}else {
 		// registration succeeded, return user_id and token
+		models.CreateProfile(&models.Profile{
+			UserID:	user.ID,
+			Nickname: "player" + string(user.ID + 12345),
+		})
 		c.JSON(http.StatusOK, json_models.AuthSuccess{
 			Code: api_codes.SUCCESS,
 			Msg:  api_codes.GetMsg(api_codes.SUCCESS),

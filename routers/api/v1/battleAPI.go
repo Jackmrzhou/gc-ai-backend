@@ -107,3 +107,40 @@ func QueryProcess(c *gin.Context) {
 		})
 	}
 }
+
+func GetUserBattles(c *gin.Context) {
+	// swagger:route GET /api/v1/user/battles getUserBattles
+	//
+	// get user's battles
+	//
+	//     Consumes:
+	//     - application/x-www-form-urlencoded
+	//
+	//     Produces:
+	//     - application/json
+	//
+	//     Responses:
+	//       200: getUserBattlesResp
+	//       400: statusResponse
+	userID, _ := utils.GetCurrentUserID(c)
+
+	if battles, err := models.QueryBattlesByUserID(userID); err != nil{
+		log.Println(err)
+		utils.ErrorResponse(c, api_codes.ERROR)
+	}else {
+		var briefBattleInfos []json_models.BriefBattleInfo
+		for _, b := range battles{
+			briefBattleInfos = append(briefBattleInfos, json_models.BriefBattleInfo{
+				BattleID:b.ID,
+				GameID:b.GameID,
+				AttackerID:b.AttackerID,
+				DefenderID:b.DefenderID,
+			})
+		}
+		c.JSON(http.StatusOK, json_models.GetUserBattlesResp{
+			Code:api_codes.SUCCESS,
+			Msg:api_codes.GetMsg(api_codes.SUCCESS),
+			Data:briefBattleInfos,
+		})
+	}
+}

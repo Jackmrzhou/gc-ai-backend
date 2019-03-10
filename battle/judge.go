@@ -27,8 +27,21 @@ func Judge(ATKSrc, DEFSrc *models.SourceCode, game *models.Game, battle *models.
 	}
 
 	atkFilePath := filepath.Join(conf.DataDir, atkUUID.String())
+	err = ioutil.WriteFile(atkFilePath, []byte(ATKSrc.Content), 0666)
+	if err != nil{
+		log.Println(err)
+	}
 	defFilePath := filepath.Join(conf.DataDir, defUUID.String())
+	err = ioutil.WriteFile(defFilePath, []byte(DEFSrc.Content), 0666)
+	if err != nil{
+		log.Println(err)
+	}
 	resFilePath := filepath.Join(conf.DataDir, resUUID.String())
+	err = ioutil.WriteFile(resFilePath, []byte(""), 0666)
+	if err != nil{
+		log.Println(err)
+		return
+	}
 
 	cmd := exec.Command(conf.JudgerPath, atkFilePath, atkUUID.String(), defFilePath, defUUID.String(), resFilePath)
 

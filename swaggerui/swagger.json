@@ -61,7 +61,7 @@
             "name": "Body",
             "in": "body",
             "schema": {
-              "$ref": "#/definitions/UploadSourceCodeReq"
+              "$ref": "#/definitions/StartBattleReq"
             }
           }
         ],
@@ -135,8 +135,9 @@
           {
             "type": "integer",
             "format": "uint64",
+            "x-go-name": "ID",
             "description": "game id",
-            "name": "ID",
+            "name": "game_id",
             "in": "query",
             "required": true
           }
@@ -166,8 +167,9 @@
           {
             "type": "integer",
             "format": "uint64",
+            "x-go-name": "ID",
             "description": "user id",
-            "name": "ID",
+            "name": "user_id",
             "in": "query",
             "required": true
           }
@@ -233,6 +235,26 @@
         "responses": {
           "200": {
             "$ref": "#/responses/uploadSourceCodeResp"
+          },
+          "400": {
+            "$ref": "#/responses/statusResponse"
+          }
+        }
+      }
+    },
+    "/api/v1/user/battles": {
+      "get": {
+        "description": "get user's battles",
+        "consumes": [
+          "application/x-www-form-urlencoded"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "operationId": "getUserBattles",
+        "responses": {
+          "200": {
+            "$ref": "#/responses/getUserBattlesResp"
           },
           "400": {
             "$ref": "#/responses/statusResponse"
@@ -464,6 +486,32 @@
       },
       "x-go-package": "github.com/jackmrzhou/gc-ai-backend/models"
     },
+    "BriefBattleInfo": {
+      "type": "object",
+      "properties": {
+        "attacker_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "AttackerID"
+        },
+        "battle_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "BattleID"
+        },
+        "defender_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "DefenderID"
+        },
+        "game_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "GameID"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
     "Game": {
       "type": "object",
       "properties": {
@@ -570,6 +618,41 @@
               "language": "cpp",
               "source_code": "string",
               "user_id": 1
+            }
+          ]
+        },
+        "message": {
+          "description": "response message",
+          "type": "string",
+          "x-go-name": "Msg",
+          "example": "ok"
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "GetUserBattlesResp": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "response status",
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Code",
+          "example": 200
+        },
+        "data": {
+          "description": "battles",
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BriefBattleInfo"
+          },
+          "x-go-name": "Data",
+          "example": [
+            {
+              "attacker_id": 13,
+              "battle_id": 22,
+              "defender_id": 14,
+              "game_id": 15
             }
           ]
         },
@@ -720,6 +803,28 @@
           "format": "uint64",
           "x-go-name": "Status",
           "example": 2
+        }
+      },
+      "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
+    },
+    "StartBattleReq": {
+      "type": "object",
+      "required": [
+        "game_id",
+        "user_id"
+      ],
+      "properties": {
+        "game_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "GameID",
+          "example": 11
+        },
+        "user_id": {
+          "type": "integer",
+          "format": "uint64",
+          "x-go-name": "UserID",
+          "example": 15
         }
       },
       "x-go-package": "github.com/jackmrzhou/gc-ai-backend/routers/api/json-models"
@@ -940,6 +1045,12 @@
       "description": "contains all the source codes",
       "schema": {
         "$ref": "#/definitions/GetSourceCodes"
+      }
+    },
+    "getUserBattlesResp": {
+      "description": "contains all battles of a user",
+      "schema": {
+        "$ref": "#/definitions/GetUserBattlesResp"
       }
     },
     "queryProcessResp": {

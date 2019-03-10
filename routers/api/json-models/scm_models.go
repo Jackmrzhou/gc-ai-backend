@@ -14,7 +14,7 @@ type UploadSourceCodeReq struct {
 	GameID uint `validate:"required" json:"game_id" binding:"required"`
 	// Required:true
 	// Example:1
-	CodeType int `validate:"required" json:"code_type" binding:"required"`
+	CodeType int `json:"code_type"`
 	// Required:true
 	// Example:cpp
 	Language string `validate:"required" json:"language" binding:"required"`

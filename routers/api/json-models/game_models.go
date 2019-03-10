@@ -46,7 +46,7 @@ type GetGameRankReq struct {
 	//
 	// in:query
 	// Required:true
-	ID uint `form:"game_id" binding:"required" validate:"required"`
+	ID uint `form:"game_id" binding:"required" validate:"required" json:"game_id"`
 }
 
 type GameRank struct {
@@ -93,7 +93,7 @@ type GetUserRankReq struct {
 	//
 	// in:query
 	// Required:true
-	ID uint `form:"user_id" binding:"required" validate:"required"`
+	ID uint `form:"user_id" binding:"required" validate:"required" json:"user_id"`
 }
 
 type UserRank struct {

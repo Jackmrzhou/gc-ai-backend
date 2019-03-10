@@ -5,7 +5,7 @@ import "github.com/jackmrzhou/gc-ai-backend/models"
 // swagger:parameters startBattle
 type swaggerStartBattleReq struct {
 	// in:body
-	Body UploadSourceCodeReq
+	Body StartBattleReq
 }
 
 type StartBattleReq struct {
@@ -66,4 +66,30 @@ type QueryProcessResp struct {
 	// details of a battle
 	// Example:{"status":2, "attacker_id":13, "defender_id": 14, "game_id":15, "detail":"string", "winner_id":0, "reward_score":0, "penalty_score":0}
 	Data models.Battle `json:"data"`
+}
+
+// contains all battles of a user
+// swagger:response getUserBattlesResp
+type swaggerGetUserBattlesResp struct {
+	// in:body
+	Body GetUserBattlesResp
+}
+
+type GetUserBattlesResp struct {
+	// response status
+	// Example:200
+	Code int `json:"code"`
+	// response message
+	// Example:ok
+	Msg string `json:"message"`
+	// battles
+	// Example:[{"attacker_id":13, "defender_id": 14, "game_id":15, "battle_id":22}]
+	Data []BriefBattleInfo `json:"data"`
+}
+
+type BriefBattleInfo struct {
+	BattleID uint `json:"battle_id"`
+	GameID uint `json:"game_id"`
+	AttackerID uint `json:"attacker_id"`
+	DefenderID uint `json:"defender_id"`
 }

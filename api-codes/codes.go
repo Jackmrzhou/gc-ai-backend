@@ -20,6 +20,8 @@ const (
 	ObjectNotFound	= 2013
 	WaitForFinish = 2014
 	StartBattleFailed = 2015
+	UpdateProfileFailed = 2016
+	NicknameExists = 2017
 )
 
 var Msgs = map[int] string{
@@ -42,6 +44,8 @@ var Msgs = map[int] string{
 	ObjectNotFound :"object not found",
 	WaitForFinish : "you still have programs in execution",
 	StartBattleFailed:"start battle failed",
+	UpdateProfileFailed:"update profile failed",
+	NicknameExists:"nickname already exists",
 }
 
 func GetMsg(code int) string {
