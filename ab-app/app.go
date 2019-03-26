@@ -10,7 +10,7 @@
 // there are no TOS at this moment, use at your own risk we take no responsibility
 //
 //     Schemes: http
-//     Host: 47.102.147.41:8080
+//     Host: 47.102.147.41
 //     BasePath: /
 //     Version: 0.1.0
 //     License: MIT http://opensource.org/licenses/MIT

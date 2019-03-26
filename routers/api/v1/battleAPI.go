@@ -91,7 +91,7 @@ func QueryProcess(c *gin.Context) {
 	//       400: statusResponse
 	var query json_models.QueryProcessReq
 
-	if c.ShouldBindJSON(&query) != nil{
+	if c.ShouldBindQuery(&query) != nil{
 		// invalid parameters
 		utils.ErrorResponse(c, api_codes.INVALID)
 		return

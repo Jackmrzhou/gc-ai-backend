@@ -19,7 +19,7 @@ using namespace std;
 //const string textB = string{ "playerB.cpp" };
 //const string programB = string{ "playerB" };
 //const string judgment = string{ "result.txt" };
-const int waitTime = 1000;//the wait time of each turn
+const int waitTime = 1000000;//the wait time of each turn
 void updateInput(ofstream&out, int &rounds, vector<pair<int, int> >& steps) {
 	out.open("input.txt");
 	out << rounds << endl;

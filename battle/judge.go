@@ -9,41 +9,51 @@ import (
 	"log"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 func Judge(ATKSrc, DEFSrc *models.SourceCode, game *models.Game, battle *models.Battle) {
 	//todo:check pointers
+	log.Println("Start judging...")
 	atkUUID, err := uuid.NewRandom()
 	if err != nil{
+		log.Println(err)
 		// todo:handle
 	}
+	atkUUIDStr := strings.Replace(atkUUID.String(), "-", "_", -1)
+
 	defUUID, err := uuid.NewRandom()
 	if err != nil{
+		log.Println(err)
 		// todo
 	}
+	defUUIDStr := strings.Replace(defUUID.String(), "-", "_", -1)
+
 	resUUID, err := uuid.NewRandom()
 	if err != nil{
+		log.Println(err)
 		// todo
 	}
+	resUUIDStr := strings.Replace(resUUID.String(), "-", "_", -1)
 
-	atkFilePath := filepath.Join(conf.DataDir, atkUUID.String())
+	atkFilePath := filepath.Join(conf.DataDir, atkUUIDStr)+".cpp"
 	err = ioutil.WriteFile(atkFilePath, []byte(ATKSrc.Content), 0666)
 	if err != nil{
 		log.Println(err)
 	}
-	defFilePath := filepath.Join(conf.DataDir, defUUID.String())
+	defFilePath := filepath.Join(conf.DataDir, defUUIDStr)+".cpp"
 	err = ioutil.WriteFile(defFilePath, []byte(DEFSrc.Content), 0666)
 	if err != nil{
 		log.Println(err)
 	}
-	resFilePath := filepath.Join(conf.DataDir, resUUID.String())
+	resFilePath := filepath.Join(conf.DataDir, resUUIDStr)
 	err = ioutil.WriteFile(resFilePath, []byte(""), 0666)
 	if err != nil{
 		log.Println(err)
 		return
 	}
 
-	cmd := exec.Command(conf.JudgerPath, atkFilePath, atkUUID.String(), defFilePath, defUUID.String(), resFilePath)
+	cmd := exec.Command(conf.JudgerPath, resFilePath, atkFilePath, atkUUIDStr, defFilePath, defUUIDStr)
 
 	if err:=models.UpdateBattleStatusByID(battle.ID, models.Judeging); err != nil{
 		log.Println(err)
@@ -54,9 +64,11 @@ func Judge(ATKSrc, DEFSrc *models.SourceCode, game *models.Game, battle *models.
 	}else {
 		b, err := ioutil.ReadFile(resFilePath)
 		if err != nil{
+			log.Println(err)
 			log.Println("Read result file failed!")
 			// todo:handle unexpect error
 		}else{
+			log.Println("End judging...")
 			UpdateBattleInfo(battle, string(b))
 
 			// todo:error handle
@@ -100,6 +112,8 @@ func UpdateBattleInfo(bt *models.Battle, result string) error {
 	}
 
 	UpdateScore(bt)
+
+	models.UpdateBattle(bt)
 	// todo:handle update error
 
 	return err

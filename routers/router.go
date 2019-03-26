@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"github.com/gin-contrib/static"
 	"github.com/gin-gonic/gin"
 	"github.com/jackmrzhou/gc-ai-backend/conf"
 	"github.com/jackmrzhou/gc-ai-backend/middleware"
@@ -18,6 +19,9 @@ func InitRouter() *gin.Engine {
 	if conf.Swagger {
 		router.Static("/swagger/", "swaggerui/")
 	}
+
+	router.Use(static.Serve("/", static.LocalFile("frontend/build", false)))
+
 	router.POST("/auth", api.GetAuth)
 	router.POST("/register", api.Register)
 	router.POST("/vericode", api.SendVeriCode)

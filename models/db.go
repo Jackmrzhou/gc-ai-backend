@@ -15,7 +15,7 @@ func OpenDB() error {
 	}
 	var err error
 	db, err = gorm.Open(conf.DBType, fmt.Sprintf(
-		"%s:%s@tcp(%s)/%s?charset=utf8&parseTime=True&loc=Local",
+		"%s:%s@tcp(%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		conf.DBUser,
 		conf.DBPasswd,
 		conf.DBHost,

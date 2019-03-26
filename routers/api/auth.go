@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/jackmrzhou/gc-ai-backend/api-codes"
 	"github.com/jackmrzhou/gc-ai-backend/models"
@@ -103,7 +104,7 @@ func Register(c *gin.Context) {
 		// registration succeeded, return user_id and token
 		models.CreateProfile(&models.Profile{
 			UserID:	user.ID,
-			Nickname: "player" + string(user.ID + 12345),
+			Nickname: "player" + fmt.Sprint(user.ID + 12345),
 		})
 		c.JSON(http.StatusOK, json_models.AuthSuccess{
 			Code: api_codes.SUCCESS,

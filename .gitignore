@@ -1,3 +1,5 @@
 *.conf
 *.sql
 gc_ai*
+frontend/
+.DS_Store

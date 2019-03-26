@@ -444,7 +444,7 @@ func QueryATKSrcByUserID(userID uint) (*SourceCode, error) {
 
 func QueryDEFSrcByUserID(userID uint) (*SourceCode, error) {
 	src := new(SourceCode)
-	err := db.Where("user_id = ? AND code_type = ?", userID, ATTACK).First(src).Error
+	err := db.Where("user_id = ? AND code_type = ?", userID, DEFEND).First(src).Error
 	return src, err
 }
 

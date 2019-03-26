@@ -46,7 +46,7 @@ type StartBattleData struct {
 
 // swagger:parameters queryProcess
 type QueryProcessReq struct {
-	BattleID uint `validate:"required" json:"battle_id" binding:"required"`
+	BattleID uint `validate:"required" json:"battle_id" binding:"required" form:"battle_id"`
 }
 
 // query succeeded, the details of a battle will be returned
